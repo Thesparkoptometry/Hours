@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hours & Locations — The Spark Optometry</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --teal: #2E7D8C;
+    --teal-lt: #EAF3F5;
+    --teal-mid: #C4DDE1;
+    --warm: #FAFAF8;
+    --amber: #E6A817;
+    --text: #2C2C2C;
+    --muted: #6B7280;
+    --border: #E2E8EA;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    background: var(--navy);
+    padding: 2rem 1.5rem 1.75rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    display: block;
+    height: 4px;
+    background: var(--teal);
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+  }
+  .brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    color: #fff;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.3rem;
+  }
+  .brand span { color: var(--teal-mid); }
+  .tagline {
+    font-size: 0.875rem;
+    color: #9ECDD6;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* Notice banner */
+  .notice {
+    background: var(--teal-lt);
+    border-left: 4px solid var(--teal);
+    padding: 0.9rem 1.25rem;
+    margin: 1.25rem auto;
+    max-width: 900px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.875rem;
+    color: var(--navy);
+    line-height: 1.5;
+  }
+  .notice strong { font-weight: 600; }
+
+  /* Main */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem 1rem 3rem;
+  }
+
+  /* Hours legend */
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-doctor { background: var(--navy); }
+  .dot-optical { background: var(--teal); }
+
+  /* Doctor hours disclaimer */
+  .disclaimer {
+    background: #fff8e6;
+    border: 1px solid #f0d090;
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    color: #7a5a10;
+    line-height: 1.55;
+  }
+  .disclaimer strong { font-weight: 600; }
+
+  /* Location card */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 680px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .card-header {
+    background: var(--navy);
+    padding: 0.7rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .location-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.15rem;
+  }
+  .location-address {
+    font-size: 0.72rem;
+    color: #9ECDD6;
+    line-height: 1.4;
+  }
+  .location-phone {
+    font-size: 0.76rem;
+    color: var(--teal-mid);
+    font-weight: 500;
+    white-space: nowrap;
+    margin-top: 0.1rem;
+  }
+
+  .schedule-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--teal);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background 0.15s;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .schedule-btn:hover { background: #236673; }
+  .schedule-btn svg { width: 11px; height: 11px; fill: #fff; }
+
+  .card-body {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Hours table */
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 400px) {
+    .hours-grid { grid-template-columns: 1fr; }
+  }
+
+  .hours-block h4 {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .hours-block.doctor h4 { color: var(--navy); }
+  .hours-block.optical h4 { color: var(--teal); }
+
+  .hours-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    padding: 0.14rem 0;
+    border-bottom: 1px solid #f0f4f5;
+  }
+  .hours-row:last-child { border-bottom: none; }
+  .day { color: var(--muted); font-weight: 400; }
+  .time { font-weight: 500; color: var(--text); }
+  .time.closed { color: #bbb; font-weight: 400; }
+  .time.placeholder {
+    color: #ccc;
+    font-style: italic;
+    font-size: 0.72rem;
+  }
+
+  /* Sunnyvale notice */
+  .location-note {
+    margin-top: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    background: var(--teal-lt);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: var(--navy);
+    line-height: 1.55;
+    border-left: 3px solid var(--teal);
+  }
+  .location-note strong { font-weight: 600; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 1.5rem 1rem 2rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">THE SPARK <span>OPTOMETRY</span></div>
+  <div class="tagline">Hours &amp; Locations</div>
+</header>
+
+<main>
+
+  <div class="legend">
+    <div class="legend-item"><div class="dot dot-doctor"></div> Doctor / Exam Hours</div>
+    <div class="legend-item"><div class="dot dot-optical"></div> Optical Staff Hours</div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Note on doctor availability:</strong> Doctor hours listed are a general guide and may vary week to week based on individual doctor schedules. Please call your nearest location to confirm availability before coming in — walk-ins cannot be guaranteed a doctor appointment.
+  </div>
+
+  <!-- LOCATION CARDS GRID -->
+  <div class="cards-grid">
+
+  <!-- SANTA CLARA -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="location-name">Santa Clara</div>
+        <div class="location-address">2004 El Camino Real, Santa Clara, CA 95050</div>
+        <div class="location-phone">(408) 244-2831</div>
+      </div>
+      <a class="schedule-btn" href="https://www.targetoptical.com/ScheduleExamView?storeNumber=4855&clearExams=1&catalogId=23701&storeId=12001&langId=-1#/steps/appointment-type" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        Schedule Exam
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="hours-grid">
+        <div class="hours-block doctor">
+          <h4><span class="dot dot-doctor"></span> Doctor Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time">10:00 AM – 3:00 PM</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">9:00 AM – 3:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">9:00 AM – 4:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time">9:30 AM – 5:30 PM</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">9:30 AM – 5:30 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">9:30 AM – 5:30 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:30 AM – 5:30 PM</span></div>
+        </div>
+        <div class="hours-block optical">
+          <h4><span class="dot dot-optical"></span> Optical Staff Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time">10:00 AM – 3:00 PM</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREMONT -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="location-name">Fremont</div>
+        <div class="location-address">39201 Fremont Blvd, Fremont, CA 94538</div>
+        <div class="location-phone">(510) 789-0914</div>
+      </div>
+      <a class="schedule-btn" href="https://www.targetoptical.com/ScheduleExamView?storeNumber=9692&clearExams=1&catalogId=23701&storeId=12001&langId=-1#/steps/appointment-type" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        Schedule Exam
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="hours-grid">
+        <div class="hours-block doctor">
+          <h4><span class="dot dot-doctor"></span> Doctor Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time">10:00 AM – 3:00 PM</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">10:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">9:00 AM – 4:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time closed">Closed</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">9:00 AM – 5:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">9:00 AM – 5:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 4:00 PM</span></div>
+        </div>
+        <div class="hours-block optical">
+          <h4><span class="dot dot-optical"></span> Optical Staff Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time">10:00 AM – 4:00 PM</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WALNUT CREEK -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="location-name">Walnut Creek</div>
+        <div class="location-address">1871 N. Main St, Walnut Creek, CA 94596</div>
+        <div class="location-phone">(925) 627-8230</div>
+      </div>
+      <a class="schedule-btn" href="https://www.targetoptical.com/ScheduleExamView?storeNumber=9711&clearExams=1&catalogId=23701&storeId=12001&langId=-1#/steps/appointment-type" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        Schedule Exam
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="hours-grid">
+        <div class="hours-block doctor">
+          <h4><span class="dot dot-doctor"></span> Doctor Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time">10:00 AM – 4:00 PM</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time closed">Closed</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">10:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time closed">Closed</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">10:00 AM – 5:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">10:00 AM – 5:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 4:30 PM</span></div>
+        </div>
+        <div class="hours-block optical">
+          <h4><span class="dot dot-optical"></span> Optical Staff Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time">10:00 AM – 4:00 PM</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">9:00 AM – 7:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUNNYVALE -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="location-name">Sunnyvale</div>
+        <div class="location-address">298 W McKinley Ave, Sunnyvale, CA 94086</div>
+        <div class="location-phone">(408) 702-1029</div>
+      </div>
+      <a class="schedule-btn" href="https://www.targetoptical.com/ScheduleExamView?storeNumber=F572&clearExams=1&catalogId=23701&storeId=12001&langId=-1" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        Schedule Exam
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="hours-grid">
+        <div class="hours-block doctor">
+          <h4><span class="dot dot-doctor"></span> Doctor Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time closed">Closed</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">10:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">10:00 AM – 6:00 PM *</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time">10:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">10:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">10:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 5:00 PM</span></div>
+        </div>
+        <div class="hours-block optical">
+          <h4><span class="dot dot-optical"></span> Optical Staff Hours</h4>
+          <div class="hours-row"><span class="day">Sunday</span><span class="time closed">Closed</span></div>
+          <div class="hours-row"><span class="day">Monday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Tuesday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Wednesday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Thursday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Friday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span class="time">9:00 AM – 6:00 PM</span></div>
+        </div>
+      </div>
+      <div class="location-note" style="margin-top:.6rem;background:#FFF8EE;border-left:3px solid #E6A817;font-size:.72rem;color:#7a5a10">* Tuesday doctor hours are every other week. Please call to confirm availability.</div>
+    </div>
+  </div>
+
+  </div> <!-- end cards-grid -->
+
+  <!-- Myopia Management note -->
+  <div style="background:#EAF3F5;border:1.5px solid var(--teal-mid);border-radius:10px;padding:.85rem 1.1rem;display:flex;gap:.75rem;align-items:flex-start">
+    <div style="font-size:1.1rem;line-height:1;flex-shrink:0">👁</div>
+    <div>
+      <div style="font-weight:700;color:var(--navy);font-size:.8rem;margin-bottom:.3rem">Myopia Management — Sunnyvale Location Note</div>
+      <div style="font-size:.76rem;color:var(--muted);line-height:1.6">Our Sunnyvale location currently offers Atropine, MiSight, and Stellest myopia management programs. Ortho-K (corneal reshaping) is not available at Sunnyvale at this time. Axial length measurement equipment is not yet available — patients may visit our Santa Clara location for axial length measurements a few times per year. Axial length capability is anticipated at Sunnyvale by 2027.</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════
+     DOCTOR SCHEDULE CALENDAR
+══════════════════════════════════════════════════════════ -->
+<section id="calendar-section" style="max-width:960px;margin:0 auto;padding:0 1rem 3rem">
+
+  <div style="background:#FFF8E6;border:2px solid var(--amber);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;gap:.85rem;align-items:flex-start">
+    <div style="font-size:1.4rem;line-height:1">📋</div>
+    <div>
+      <div style="font-weight:700;color:#7a5a10;font-size:.88rem;margin-bottom:.3rem">Planning Guide — Not a Real-Time Schedule</div>
+      <div style="font-size:.8rem;color:#7a5a10;line-height:1.6">
+        This calendar is updated periodically as a general guide and <strong>last-minute changes may not be reflected</strong>. Please rely on your <strong>appointment confirmation</strong> and any calls from our staff for the most accurate information about which doctor you'll be seeing. We share this to make planning easier — thank you for your understanding!
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.25rem">
+    <div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--navy)">Doctor Schedule</h2>
+      <p style="font-size:.82rem;color:var(--muted);margin-top:.2rem">Which doctor is seeing patients — always call to confirm your appointment.</p>
+    </div>
+    <button id="admin-cal-btn" style="background:var(--amber);color:var(--navy);border:none;border-radius:6px;padding:.4rem .85rem;font-size:.75rem;font-weight:700;font-family:inherit;cursor:pointer">⚙ Admin</button>
+  </div>
+
+  <!-- Location filter -->
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem" id="cal-loc-tabs">
+    <button class="cal-loc-btn active" data-loc="SC" style="padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--border);font-size:.76rem;font-weight:500;font-family:inherit;background:#fff;color:var(--muted);cursor:pointer">Santa Clara</button>
+    <button class="cal-loc-btn" data-loc="SV" style="padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--border);font-size:.76rem;font-weight:500;font-family:inherit;background:#fff;color:var(--muted);cursor:pointer">Sunnyvale</button>
+    <button class="cal-loc-btn" data-loc="F" style="padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--border);font-size:.76rem;font-weight:500;font-family:inherit;background:#fff;color:var(--muted);cursor:pointer">Fremont</button>
+    <button class="cal-loc-btn" data-loc="WC" style="padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--border);font-size:.76rem;font-weight:500;font-family:inherit;background:#fff;color:var(--muted);cursor:pointer">Walnut Creek</button>
+  </div>
+
+  <!-- Calendar grid -->
+  <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem;margin-bottom:.75rem">
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Sun</div>
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Mon</div>
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Tue</div>
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Wed</div>
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Thu</div>
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Fri</div>
+    <div style="text-align:center;font-size:.7rem;font-weight:700;color:var(--muted);padding:.3rem 0">Sat</div>
+  </div>
+  <div id="cal-days" style="display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem"></div>
+
+  <p style="font-size:.74rem;color:var(--muted);margin-top:.75rem">* Doctor hours are a general guide and may vary. Please call to confirm your appointment.</p>
+
+  <!-- Admin panel (hidden by default) -->
+  <div id="cal-admin-panel" style="display:none;margin-top:2rem;background:#fff;border-radius:12px;border:1.5px solid var(--border);overflow:hidden">
+    <div style="background:var(--navy);padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between">
+      <span style="color:#fff;font-weight:600;font-size:.92rem">Schedule Admin</span>
+      <button id="cal-admin-close" style="background:none;border:none;color:#9ECDD6;font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:1.25rem">
+
+
+      <!-- Upload schedule image -->
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);border-bottom:1.5px solid var(--teal-lt);padding-bottom:.35rem;margin-bottom:.85rem">📷 Upload Schedule Screenshot</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">Take a screenshot of your schedule spreadsheet and upload it. Claude will read it and extract the doctor assignments automatically.</p>
+        <input type="file" id="sched-file" accept="image/*" style="margin-bottom:.75rem;font-size:.83rem;display:block">
+        <div id="sched-preview" style="margin-bottom:.75rem"></div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <button id="sched-ocr-btn" style="background:var(--teal);color:#fff;border:none;border-radius:7px;padding:.55rem 1.1rem;font-size:.83rem;font-weight:600;font-family:inherit;cursor:pointer">✦ Read Schedule with AI</button>
+          <span id="sched-status" style="font-size:.78rem;color:var(--muted)"></span>
+        </div>
+      </div>
+
+      <!-- Extracted schedule editor -->
+      <div id="sched-editor" style="display:none">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);border-bottom:1.5px solid var(--teal-lt);padding-bottom:.35rem;margin-bottom:.85rem">✏ Review & Edit Extracted Schedule</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">Check the assignments below — edit any initials if needed, then click Save to publish. Empty = no doctor scheduled.</p>
+        <div id="sched-table-wrap" style="overflow-x:auto;margin-bottom:1rem"></div>
+        <button id="sched-save-btn" style="background:var(--navy);color:#fff;border:none;border-radius:7px;padding:.55rem 1.1rem;font-size:.83rem;font-weight:600;font-family:inherit;cursor:pointer">💾 Save &amp; Publish Schedule</button>
+        <span id="sched-save-status" style="font-size:.78rem;color:var(--muted);margin-left:.75rem"></span>
+      </div>
+
+      <!-- Doctor initials manager -->
+      <div style="margin-top:1.5rem">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);border-bottom:1.5px solid var(--teal-lt);padding-bottom:.35rem;margin-bottom:.85rem">👩‍⚕️ Doctor Initials</div>
+        <div id="doctor-initials-list" style="margin-bottom:.85rem"></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <input type="text" id="new-initials" placeholder="e.g. CY" maxlength="4" style="width:70px;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:6px;font-size:.83rem;font-family:inherit;outline:none;text-transform:uppercase">
+          <input type="text" id="new-doctor-name" placeholder="e.g. Dr. Christine Yang" style="flex:1;min-width:180px;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:6px;font-size:.83rem;font-family:inherit;outline:none">
+          <button id="add-initials-btn" style="background:var(--teal);color:#fff;border:none;border-radius:6px;padding:.45rem .9rem;font-size:.82rem;font-weight:600;font-family:inherit;cursor:pointer">+ Add</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><a href="https://thesparkoptometry.com">thesparkoptometry.com</a> &nbsp;·&nbsp; <a href="mailto:office@thesparkoptometry.com">office@thesparkoptometry.com</a></p>
+  <p style="margin-top:0.4rem">To schedule a myopia management appointment, please call your nearest location directly.</p>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════
+     FIREBASE + CALENDAR JS
+══════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc }
+  from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDpWF7_2czyzZaZ-g77yPOE1gxwh5C7wZg",
+  authDomain: "spark-doctor-portal.firebaseapp.com",
+  projectId: "spark-doctor-portal",
+  storageBucket: "spark-doctor-portal.firebasestorage.app",
+  messagingSenderId: "989715476181",
+  appId: "1:989715476181:web:22352ed6e4b083b8ffbc5c"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── Constants ────────────────────────────────────────────────
+const ADMIN_PW  = 'Target123';
+const LOCS      = ['SC','SV','F','WC'];
+const LOC_NAMES = { SC:'Santa Clara', SV:'Sunnyvale', F:'Fremont', WC:'Walnut Creek' };
+const DAYS      = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS_MAP = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+const MP = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
+
+const DEFAULT_DOCTORS = {
+  CY:'Dr. Christine Yang', IK:'Dr. Ivy Kha',      MK:'Dr. Monica Luong',
+  TP:'Dr. Thomas Pan',     GG:'Dr. Gurkarn Ghag',  RK:'Dr. Rachel Kaneta',
+  BZ:'Dr. Bethany Zhang',  LF:'Dr. Lisa Fan',      OB:'Dr. Olivia Burger',
+  AD:'Dr. Annie Duong',    KS:'Dr. Ka Yee So',     KC:'Dr. Kimberly Cheng',
+  JP:'Dr. Jennifer Pham'
+};
+
+// ── State ────────────────────────────────────────────────────
+let currentLoc  = 'SC';
+let schedule    = {};
+let doctorMap   = {};
+let parsedWeeks = [];   // raw parsed data for the editor table
+
+// ── Firebase ─────────────────────────────────────────────────
+async function loadSchedule() {
+  try {
+    const snap = await getDoc(doc(db, 'hours_schedule', 'current'));
+    if (snap.exists()) schedule = snap.data().schedule || {};
+  } catch(e) { console.warn('Schedule load failed:', e); }
+}
+
+async function saveSchedule() {
+  await setDoc(doc(db, 'hours_schedule', 'current'),
+    { schedule, updatedAt: new Date().toISOString() });
+}
+
+async function loadDoctorMap() {
+  try {
+    const snap = await getDoc(doc(db, 'hours_schedule', 'doctors'));
+    doctorMap = snap.exists() ? (snap.data().map || DEFAULT_DOCTORS) : { ...DEFAULT_DOCTORS };
+  } catch(e) { doctorMap = { ...DEFAULT_DOCTORS }; }
+}
+
+async function saveDoctorMap() {
+  await setDoc(doc(db, 'hours_schedule', 'doctors'), { map: doctorMap });
+}
+
+// ── Schedule parser ───────────────────────────────────────────
+function parseScheduleText(rawText, year) {
+  if (!year) year = new Date().getFullYear();
+  // Google Sheets pastes tab-separated columns with newlines between rows.
+  // Row 1 per week: weekNum<TAB>Sun date<TAB>Mon date<TAB>...<TAB>Sat date
+  // Rows 2-5: SC/SV/F/WC <TAB> entry <TAB> entry ... (empty tab = no doctor)
+
+  const lines = rawText.split('\n').map(l => l.trimEnd()).filter(l => l.trim());
+  const weeks = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const hdr = lines[i];
+    // Header row starts with a number (week#) then tab
+    if (!/^\d+\t/.test(hdr)) { i++; continue; }
+
+    const hdrCells = hdr.split('\t');
+    const dates = [];
+    let prevM = 0, curYear = year;
+    for (let ci = 1; ci < hdrCells.length && dates.length < 7; ci++) {
+      const cell = hdrCells[ci].trim();
+      const dm = cell.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s*(\d+)/);
+      if (!dm) continue;
+      const monthNums = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+      const m = monthNums[dm[1]], d = parseInt(dm[2]);
+      if (m < prevM) curYear++;
+      prevM = m;
+      dates.push(curYear + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'));
+    }
+
+    if (dates.length < 7) { i++; continue; }
+
+    // Next rows: location rows
+    const locEntries = {};
+    let rowsFound = 0;
+    let ri = i + 1;
+    while (ri < lines.length && rowsFound < 4) {
+      const row = lines[ri];
+      if (!row.trim()) { ri++; continue; }
+      const cells = row.split('\t');
+      const loc = cells[0].trim().toUpperCase();
+      if (!['SC','SV','F','WC'].includes(loc)) { ri++; break; }
+      const tokens = [];
+      for (let ci = 1; ci <= 7; ci++) {
+        const cell = (cells[ci] || '').trim();
+        if (!cell || cell === '-') {
+          tokens.push('');
+        } else if (/blocked|pending/i.test(cell)) {
+          tokens.push('BLOCKED');
+        } else {
+          const m2 = cell.match(/^([A-Z]{2,3})/);
+          tokens.push(m2 ? m2[1] : '');
+        }
+      }
+      while (tokens.length < 7) tokens.push('');
+      locEntries[loc] = tokens;
+      rowsFound++;
+      ri++;
+    }
+    i = ri;
+
+    if (rowsFound >= 2) {
+      weeks.push({ dates: dates, locEntries: locEntries });
+    }
+  }
+
+  // Fallback: run-together format (no tabs/newlines)
+  if (!weeks.length) {
+    const joined = rawText.replace(/[\t\n\r]+/g, '').trim();
+    return parseRunTogetherFormat(joined, year);
+  }
+  return weeks;
+}
+
+function parseRunTogetherFormat(rawText, year) {
+  if (!year) year = new Date().getFullYear();
+  const MP = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
+  const MONTHS_MAP2 = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+  const allDM = [...rawText.matchAll(/(\d+)(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s/g)];
+  const weekBoundaries = allDM
+    .filter(m => m.index === 0 || rawText[m.index-1] === ')' || rawText[m.index-1] === ']')
+    .map(m => m.index);
+  if (!weekBoundaries.length) return [];
+  const weeks = [];
+  weekBoundaries.forEach((start, wi) => {
+    const end = weekBoundaries[wi+1] != null ? weekBoundaries[wi+1] : rawText.length;
+    const block = rawText.slice(start, end);
+    const scPos = block.indexOf('SC');
+    if (scPos < 0) return;
+    const header = block.slice(0, scPos);
+    const dateMatches = [...header.matchAll(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})/g)];
+    const dates = [];
+    let prevM = 0, curYear = year;
+    for (const [, mon, day] of dateMatches) {
+      const m = MONTHS_MAP2[mon], d = parseInt(day);
+      if (m < prevM) curYear++;
+      prevM = m;
+      dates.push(curYear + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'));
+    }
+    if (dates.length < 7) return;
+    const locText = block.slice(scPos);
+    const locPos = [];
+    for (const m of locText.matchAll(/SC|SV|WC/g)) locPos.push([m.index, m[0]]);
+    const svP = locPos.find(([,l]) => l==='SV') ? locPos.find(([,l]) => l==='SV')[0] : null;
+    const wcP = locPos.find(([,l]) => l==='WC') ? locPos.find(([,l]) => l==='WC')[0] : null;
+    if (svP != null && wcP != null) {
+      const zone = locText.slice(svP, wcP);
+      const fPat = /[^A-Z]F(?=[A-Z])/g;
+      let fm;
+      while ((fm = fPat.exec(zone)) !== null) { locPos.push([svP+fm.index+1,'F']); break; }
+    }
+    locPos.sort((a,b)=>a[0]-b[0]);
+    const locTexts = {};
+    locPos.forEach(([pos,loc],idx) => {
+      const nxt = locPos[idx+1] ? locPos[idx+1][0] : locText.length;
+      locTexts[loc] = locText.slice(pos+loc.length, nxt);
+    });
+    const entryPat = /([A-Z]{2}(?:[A-Z])?(?:\/[A-Z]{2})?)(?:\s*(?:\([^)]*\)|\[[^\]]*\]|\?))?/g;
+    const locEntries = {};
+    ['SC','SV','F','WC'].forEach(loc => {
+      const tokens = [];
+      for (const m of (locTexts[loc]||'').matchAll(entryPat)) {
+        const full=m[0], init=m[1].split('/')[0];
+        if (['AM','PM'].includes(init)) continue;
+        if (/blocked|pending/i.test(full)) tokens.push('BLOCKED');
+        else if (full.includes('?')) tokens.push('');
+        else tokens.push(init);
+      }
+      while (tokens.length<7) tokens.push('');
+      locEntries[loc]=tokens.slice(0,7);
+    });
+    weeks.push({dates:dates.slice(0,7),locEntries:locEntries});
+  });
+  return weeks;
+}
+
+
+// ── Calendar rendering ────────────────────────────────────────
+function getNext6Weeks() {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - today.getDay());
+  return Array.from({ length: 56 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
+}
+
+function fmtKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function renderCalendar() {
+  const dates = getNext6Weeks();
+  const today = new Date(); today.setHours(0,0,0,0);
+  document.getElementById('cal-days').innerHTML = dates.map(date => {
+    const key = fmtKey(date);
+    const isPast  = date < today;
+    const isToday = date.getTime() === today.getTime();
+    const dayData = schedule[key]?.[currentLoc] || [];
+    const bg      = isToday ? '#EAF3F5' : '#fff';
+    const border  = isToday ? 'var(--teal)' : 'var(--border)';
+    const dateNum = date.getDate();
+    const showMon = dateNum === 1 || date === dates[0];
+    const mon     = date.toLocaleDateString('en-US',{month:'short'});
+    let inner = '';
+    if (!dayData.length)
+      inner = `<div style="font-size:.63rem;color:#ccc;margin-top:.25rem">Closed</div>`;
+    else if (dayData[0] === 'BLOCKED')
+      inner = `<div style="font-size:.63rem;color:#bbb;font-style:italic;margin-top:.25rem">To be confirmed</div>`;
+    else
+      inner = dayData.map(n =>
+        `<div style="font-size:.62rem;color:var(--teal);font-weight:600;line-height:1.35;margin-top:.15rem">${n}</div>`
+      ).join('');
+    return `<div style="background:${bg};border:1.5px solid ${border};border-radius:8px;padding:.4rem .35rem;min-height:72px;${isPast?'opacity:.45':''}">
+      <div style="font-size:.7rem;font-weight:700;color:${isToday?'var(--teal)':'var(--navy)'}">
+        ${dateNum}${showMon?` <span style="font-weight:400;color:var(--muted)">${mon}</span>`:''}
+      </div>${inner}</div>`;
+  }).join('');
+}
+
+// ── Location tabs ─────────────────────────────────────────────
+document.querySelectorAll('.cal-loc-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cal-loc-btn').forEach(b => {
+      b.style.cssText = 'padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--border);font-size:.76rem;font-weight:500;font-family:inherit;background:#fff;color:var(--muted);cursor:pointer';
+    });
+    btn.style.background = 'var(--navy)'; btn.style.color = '#fff'; btn.style.borderColor = 'var(--navy)';
+    currentLoc = btn.dataset.loc;
+    renderCalendar();
+  });
+});
+
+// ── Admin panel ───────────────────────────────────────────────
+document.getElementById('admin-cal-btn').addEventListener('click', () => {
+  const pw = prompt('Enter admin password:');
+  if (pw !== ADMIN_PW) { if (pw !== null) alert('Incorrect password.'); return; }
+  document.getElementById('cal-admin-panel').style.display = 'block';
+  renderDoctorInitialsList();
+});
+document.getElementById('cal-admin-close').addEventListener('click', () => {
+  document.getElementById('cal-admin-panel').style.display = 'none';
+});
+
+// ── Doctor initials management ────────────────────────────────
+function renderDoctorInitialsList() {
+  document.getElementById('doctor-initials-list').innerHTML =
+    Object.entries(doctorMap).sort((a,b)=>a[0].localeCompare(b[0])).map(([init,name]) => `
+      <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid #F5F5F5;font-size:.82rem">
+        <span style="font-weight:700;color:var(--navy);min-width:36px">${init}</span>
+        <span style="flex:1;color:var(--text)">${name}</span>
+        <button onclick="window._removeInit('${init}')" style="background:#FDE8E8;color:#C62828;border:none;border-radius:5px;padding:.2rem .5rem;font-size:.7rem;cursor:pointer">Remove</button>
+      </div>`).join('') ||
+    '<div style="color:var(--muted);font-size:.82rem;padding:.35rem 0">No doctors added yet.</div>';
+}
+
+window._removeInit = async init => {
+  if (!confirm(`Remove ${init} — ${doctorMap[init]}?`)) return;
+  delete doctorMap[init];
+  await saveDoctorMap();
+  renderDoctorInitialsList();
+};
+
+document.getElementById('add-initials-btn').addEventListener('click', async () => {
+  const init = document.getElementById('new-initials').value.trim().toUpperCase();
+  const name = document.getElementById('new-doctor-name').value.trim();
+  if (!init || !name) { alert('Please enter both initials and name.'); return; }
+  doctorMap[init] = name;
+  document.getElementById('new-initials').value = '';
+  document.getElementById('new-doctor-name').value = '';
+  await saveDoctorMap();
+  renderDoctorInitialsList();
+});
+
+// ── Image upload preview ──────────────────────────────────────
+document.getElementById('sched-file').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('sched-preview').innerHTML =
+      '<img src="' + ev.target.result + '" style="max-width:100%;max-height:200px;border-radius:6px;border:1px solid var(--border)">';
+  };
+  reader.readAsDataURL(file);
+});
+
+// ── OCR via Cloudflare Worker ──────────────────────────────────
+document.getElementById('sched-ocr-btn').addEventListener('click', async function() {
+  var file = document.getElementById('sched-file').files[0];
+  var status = document.getElementById('sched-status');
+  if (!file) { status.textContent = 'Please select an image first.'; return; }
+  status.textContent = 'Reading schedule with AI...';
+  document.getElementById('sched-ocr-btn').disabled = true;
+  try {
+    var base64 = await new Promise(function(res, rej) {
+      var reader = new FileReader();
+      reader.onload = function(e) { res(e.target.result.split(',')[1]); };
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+    var response = await fetch('https://spark-schedule-ocr.ilikebroccoli.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType: file.type || 'image/jpeg' })
+    });
+    var result = await response.json();
+    if (result.error) { status.textContent = '\u2717 Error: ' + result.error; return; }
+    if (!result.weeks || !result.weeks.length) { status.textContent = '\u2717 No weeks found in image.'; return; }
+    parsedWeeks = result.weeks.map(function(w) {
+      return { dates: w.dates, locEntries: { SC: w.SC || [], SV: w.SV || [], F: w.F || [], WC: w.WC || [] } };
+    });
+    status.textContent = '\u2713 Found ' + parsedWeeks.length + ' week' + (parsedWeeks.length > 1 ? 's' : '') + ' \u2014 review below';
+    renderEditor();
+    document.getElementById('sched-editor').style.display = 'block';
+  } catch(e) {
+    status.textContent = '\u2717 Error \u2014 ' + e.message;
+    console.error(e);
+  }
+  document.getElementById('sched-ocr-btn').disabled = false;
+});
+
+// ── Editor table ──────────────────────────────────────────────
+function renderEditor() {
+  const wrap = document.getElementById('sched-table-wrap');
+  let html = `<table style="border-collapse:collapse;font-size:.75rem;min-width:700px;width:100%">
+    <thead><tr style="background:var(--navy);color:#fff">
+      <th style="padding:.4rem .6rem;text-align:left;white-space:nowrap">Location</th>
+      <th style="padding:.4rem .6rem;white-space:nowrap">Week of</th>
+      ${DAYS.map(d=>`<th style="padding:.4rem .5rem">${d}</th>`).join('')}
+    </tr></thead><tbody>`;
+
+  parsedWeeks.forEach((week, wi) => {
+    LOCS.forEach((loc, li) => {
+      const rowBg = li % 2 === 0 ? '#fff' : '#F8FBFC';
+      html += `<tr style="background:${rowBg};border-bottom:1px solid var(--border)">
+        <td style="padding:.3rem .6rem;font-weight:600;color:var(--navy);white-space:nowrap">${LOC_NAMES[loc]}</td>
+        <td style="padding:.3rem .6rem;color:var(--muted);font-size:.7rem;white-space:nowrap">${li===0?week.dates[0]:''}</td>`;
+      DAYS.forEach((_, di) => {
+        const val = week.locEntries[loc]?.[di] || '';
+        html += `<td style="padding:.2rem .25rem">
+          <input type="text" value="${val}" data-wi="${wi}" data-loc="${loc}" data-di="${di}"
+            style="width:52px;padding:.2rem .25rem;border:1px solid var(--border);border-radius:4px;font-size:.72rem;font-family:inherit;outline:none;text-align:center;text-transform:uppercase"
+            onfocus="this.style.borderColor='var(--teal)'"
+            onblur="this.style.borderColor='var(--border)'"
+            placeholder="—">
+        </td>`;
+      });
+      html += `</tr>`;
+    });
+  });
+
+  html += `</tbody></table>`;
+  wrap.innerHTML = html;
+}
+
+// ── Save to Firebase ──────────────────────────────────────────
+document.getElementById('sched-save-btn').addEventListener('click', async () => {
+  const saveStatus = document.getElementById('sched-save-status');
+  saveStatus.textContent = 'Saving...';
+
+  // Read all edits from table
+  document.querySelectorAll('#sched-table-wrap input').forEach(input => {
+    const wi  = parseInt(input.dataset.wi);
+    const loc = input.dataset.loc;
+    const di  = parseInt(input.dataset.di);
+    const week = parsedWeeks[wi];
+    if (!week) return;
+    const dateKey = week.dates[di];
+    if (!dateKey) return;
+    const raw = input.value.trim().toUpperCase();
+    if (!schedule[dateKey]) schedule[dateKey] = { SC:[], SV:[], F:[], WC:[] };
+    if (raw === '' || raw === '—') {
+      schedule[dateKey][loc] = [];
+    } else if (raw === 'BLOCKED') {
+      schedule[dateKey][loc] = ['BLOCKED'];
+    } else {
+      // Map initials to full name, fall back to raw if unknown
+      schedule[dateKey][loc] = [doctorMap[raw] || raw];
+    }
+  });
+
+  try {
+    await saveSchedule();
+    saveStatus.textContent = '✓ Published!';
+    renderCalendar();
+    setTimeout(() => saveStatus.textContent = '', 4000);
+  } catch(e) {
+    saveStatus.textContent = '✗ Save failed — check console';
+    console.error(e);
+  }
+});
+
+// ── Init ──────────────────────────────────────────────────────
+async function initCalendar() {
+  await Promise.all([loadSchedule(), loadDoctorMap()]);
+  renderCalendar();
+}
+
+initCalendar();
+</script>
+
+</body>
+</html>
